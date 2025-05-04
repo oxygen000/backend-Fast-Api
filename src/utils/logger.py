@@ -5,22 +5,31 @@ Provides a consistent logging interface for the application.
 
 import logging
 import sys
+import os
 from pathlib import Path
 from typing import Optional
 
 # Import config
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
+
+# Create logs directory if it doesn't exist
+logs_dir = os.path.join(Path(__file__).resolve().parent.parent.parent, "logs")
+os.makedirs(logs_dir, exist_ok=True)
+
+# Set log file path
+LOG_FILE = os.path.join(logs_dir, "app.log")
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 # Create logger
 logger = logging.getLogger("face_recognition_api")
 logger.setLevel(getattr(logging, config.LOG_LEVEL))
 
 # Create formatter
-formatter = logging.Formatter(config.LOG_FORMAT)
+formatter = logging.Formatter(LOG_FORMAT)
 
 # Create file handler
-file_handler = logging.FileHandler(config.LOG_FILE)
+file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 

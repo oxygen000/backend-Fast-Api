@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parent))
 
 # Import config and logger
 from config import config
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 # Get logger
 logger = get_logger("main")
@@ -29,7 +29,7 @@ def main():
     
     # Start the server
     uvicorn.run(
-        "api.api:app",
+        "src.api.api:app",
         host=config.API_HOST,
         port=port,
         reload=config.API_DEBUG,
