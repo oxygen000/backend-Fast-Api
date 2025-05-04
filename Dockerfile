@@ -1,47 +1,30 @@
-FROM python:3.11-alpine
+FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies for face_recognition and OpenCV
-RUN apk add --no-cache \
-    build-base \
+# Install system dependencies for face_recognition
+RUN apt-get update && apt-get install -y \
+    build-essential \
     cmake \
-    gcc \
-    g++ \
-    jpeg-dev \
-    python3-dev \
-    musl-dev \
-    openblas-dev \
-    freetype-dev \
-    libpng-dev \
-    openblas \
-    libffi-dev \
-    libxml2-dev \
-    libxslt-dev \
-    linux-headers \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libglib2.0-0 \
     git \
-    zstd \
-    xz
-
-# Install dlib separately (dependency of face_recognition)
-RUN pip install --no-cache-dir numpy
-RUN git clone -b 'v19.21' --single-branch https://github.com/davisking/dlib.git dlib/ && \
-    cd dlib/ && \
-    python setup.py install --no USE_AVX_INSTRUCTIONS --no DLIB_USE_CUDA && \
-    cd .. && \
-    rm -rf dlib/
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install requirements
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p data logs uploads
+RUN mkdir -p data logs uploads && chmod -R 777 data logs uploads
 
 # Set environment variables
 ENV API_HOST=0.0.0.0
@@ -54,3 +37,5 @@ EXPOSE 8000
 
 # Run the application
 CMD ["python", "main.py"]
+
+

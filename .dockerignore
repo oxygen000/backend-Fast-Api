@@ -25,3 +25,15 @@ var/
 *.egg
 data/
 logs/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Procfile
+railway.json
+README.md
+LICENSE
+tests/
+docs/
+

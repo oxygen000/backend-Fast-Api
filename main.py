@@ -19,7 +19,7 @@ def main():
     """
     Main entry point for the application.
     """
-    # Railway provides PORT environment variable
+    # Fly.io provides PORT environment variable
     port = int(os.environ.get("PORT", config.API_PORT))
     
     logger.info(f"Starting Face Recognition API v{config.API_VERSION}")
@@ -36,7 +36,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
 

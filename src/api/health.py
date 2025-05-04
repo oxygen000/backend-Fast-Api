@@ -18,6 +18,20 @@ logger = get_logger("api.health")
 # Create router
 router = APIRouter(tags=["Health"])
 
+@router.get("/")
+async def root():
+    """
+    Root endpoint for health checks.
+    
+    Returns:
+        Simple health status
+    """
+    logger.debug("Root health check requested")
+    return {
+        "status": "healthy",
+        "version": config.API_VERSION
+    }
+
 @router.get("/healthz")
 async def health_check():
     """
@@ -43,3 +57,4 @@ async def health_check_legacy():
     """
     logger.debug("Legacy health check requested")
     return await health_check()
+
