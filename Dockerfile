@@ -22,13 +22,17 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install dlib separately first
+RUN pip install --no-cache-dir dlib==19.22.1
+
 # نسخ ملف المتطلبات أولاً لتقليل الطبقات في كل مرة
 COPY requirements.txt .
 
-# تثبيت مكتبات بايثون المطلوبة
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir dlib-binary && \
-    pip install --no-cache-dir -r requirements.txt
+# تثبيت مكتبات بايثون المطلوبة (excluding dlib)
+RUN pip install --no-cache-dir -r requirements.txt
 
 # نسخ كود المشروع
 COPY . .
