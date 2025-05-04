@@ -1,8 +1,10 @@
+# استخدم نسخة مناسبة وثابتة من Python
 FROM python:3.12-slim
 
+# تحديد مجلد العمل داخل الحاوية
 WORKDIR /app
 
-# Install system dependencies for face_recognition
+# تثبيت المتطلبات الأساسية التي تحتاجها مكتبة face_recognition و dlib
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -10,32 +12,36 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender-dev \
     libglib2.0-0 \
+    libboost-all-dev \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
+    libgtk-3-dev \
+    python3-dev \
     git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# نسخ ملف المتطلبات أولاً لتقليل الطبقات في كل مرة
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# تثبيت مكتبات بايثون المطلوبة
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# نسخ كود المشروع
 COPY . .
 
-# Create necessary directories
+# إنشاء المجلدات الضرورية وتعيين التصاريح
 RUN mkdir -p data logs uploads && chmod -R 777 data logs uploads
 
-# Set environment variables
+# تعيين متغيرات البيئة
 ENV API_HOST=0.0.0.0
 ENV API_PORT=8000
 ENV API_DEBUG=False
 ENV LOG_LEVEL=INFO
 
-# Expose the port
+# فتح المنفذ
 EXPOSE 8000
 
-# Run the application
+# أمر التشغيل الأساسي
 CMD ["python", "main.py"]
-
-
