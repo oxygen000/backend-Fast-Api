@@ -10,8 +10,8 @@ from pathlib import Path
 # Add current directory to path
 sys.path.append(str(Path(__file__).resolve().parent))
 
-# ✅ استيراد المتغيرات من config.py
-import config
+# Import config and logger
+from config import config
 from utils.logger import get_logger
 
 # Get logger
@@ -22,18 +22,18 @@ def main():
     Main entry point for the application.
     """
     # Fly.io provides PORT environment variable
-    port = int(os.environ.get("PORT", 8000))  # حدد 8000 افتراضياً
+    port = int(os.environ.get("PORT", config.API_PORT))
 
-    logger.info("Starting Face Recognition API")
-    logger.info(f"Host: 0.0.0.0, Port: {port}")
+    logger.info(f"Starting Face Recognition API v{config.API_VERSION}")
+    logger.info(f"Host: {config.API_HOST}, Port: {port}")
     
     # Start the server
     uvicorn.run(
         "api.api:app",
-        host="0.0.0.0",
+        host=config.API_HOST,
         port=port,
-        reload=False,
-        log_level="info"
+        reload=config.API_DEBUG,
+        log_level=config.LOG_LEVEL.lower()
     )
 
 if __name__ == "__main__":
