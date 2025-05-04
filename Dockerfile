@@ -1,5 +1,5 @@
 # استخدم نسخة مناسبة وثابتة من Python
-FROM python:3.12-slim
+FROM python:3.9-slim
 
 # تحديد مجلد العمل داخل الحاوية
 WORKDIR /app
@@ -26,7 +26,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # تثبيت مكتبات بايثون المطلوبة
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir dlib-binary && \
+    pip install --no-cache-dir -r requirements.txt
 
 # نسخ كود المشروع
 COPY . .
