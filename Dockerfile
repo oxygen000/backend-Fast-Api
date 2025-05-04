@@ -1,10 +1,10 @@
-# استخدم نسخة مناسبة وثابتة من Python
+# Base Python image
 FROM python:3.9-slim
 
-# تحديد مجلد العمل داخل الحاوية
+# Set working directory
 WORKDIR /app
 
-# تثبيت المتطلبات الأساسية التي تحتاجها مكتبة face_recognition و dlib
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -25,29 +25,29 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip
 RUN pip install --upgrade pip
 
+# Copy requirements file
+COPY requirements.txt .
+
 # Install dlib separately first
 RUN pip install --no-cache-dir dlib==19.22.1
 
-# نسخ ملف المتطلبات أولاً لتقليل الطبقات في كل مرة
-COPY requirements.txt .
-
-# تثبيت مكتبات بايثون المطلوبة (excluding dlib)
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# نسخ كود المشروع
+# Copy application code
 COPY . .
 
-# إنشاء المجلدات الضرورية وتعيين التصاريح
+# Create necessary directories
 RUN mkdir -p data logs uploads && chmod -R 777 data logs uploads
 
-# تعيين متغيرات البيئة
+# Set environment variables
 ENV API_HOST=0.0.0.0
 ENV API_PORT=8000
 ENV API_DEBUG=False
 ENV LOG_LEVEL=INFO
 
-# فتح المنفذ
+# Expose port
 EXPOSE 8000
 
-# أمر التشغيل الأساسي
+# Run the application
 CMD ["python", "main.py"]

@@ -1,8 +1,8 @@
+# Git
 .git
-.github
 .gitignore
-.env
-.env.*
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,12 +23,41 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Data directories
 data/
 logs/
+uploads/
+
+# Development and IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Virtual environment
+venv/
+ENV/
+
+# Docker
+.dockerignore
+Dockerfile
+
+# Fly.io
+fly.toml
+
+.github
+.env
+.env.*
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 .DS_Store
 Procfile
 railway.json
