@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple, Union
 
 # Append parent directory to import config and logger
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 logger = get_logger("face_service")
 
@@ -19,10 +19,10 @@ class FaceService:
     """Face recognition service for image processing and analysis."""
 
     def __init__(self):
-        self.tolerance = config.FACE_RECOGNITION_TOLERANCE
-        self.model = config.FACE_RECOGNITION_MODEL  # "cnn" for higher accuracy
-        self.multi_angle_jitter = config.MULTI_ANGLE_JITTER  # e.g., 15
-        self.num_jitters = config.FACE_ENCODING_JITTERS  # e.g., 5
+        self.tolerance = 0.6  # Default tolerance value 
+        self.model = "hog"  # Default model - "hog" is faster, "cnn" is more accurate
+        self.multi_angle_jitter = 15  # Default jitter for multi-angle encoding
+        self.num_jitters = 5  # Default number of jitters for face encoding
         logger.info(f"Initialized FaceService with tolerance={self.tolerance}, model={self.model}, num_jitters={self.num_jitters}")
 
     def _decode_image(self, image_data: Union[str, bytes]) -> Optional[np.ndarray]:
@@ -237,3 +237,37 @@ class FaceService:
         if abs(pose["roll"]) > 20:
             return "Please level your head."
         return None
+
+    def process_image(self, image_data: Union[str, bytes]) -> Optional[np.ndarray]:
+        """Process image data and return a NumPy array."""
+        return self._decode_image(image_data)
+        
+    def decode_from_bytes(self, encoding_bytes: bytes) -> np.ndarray:
+        """Decode face encoding from bytes."""
+        return np.frombuffer(encoding_bytes, dtype=np.float64)
+        
+    def decode_multiple_from_bytes(self, encodings_bytes: bytes) -> List[np.ndarray]:
+        """Decode multiple face encodings from bytes."""
+        # Implement this method based on your serialization approach
+        return []
+        
+    def compare_faces(self, known_encoding: np.ndarray, unknown_encoding: np.ndarray, 
+                      poses: Optional[Dict] = None) -> Tuple[bool, float, float]:
+        """Compare two face encodings and determine if they match."""
+        adjusted_tolerance = self.tolerance
+        
+        # Adjust tolerance based on pose if available
+        if poses:
+            # Implementation for pose-based adjustment
+            pass
+            
+        # Calculate distance between encodings
+        distance = np.linalg.norm(known_encoding - unknown_encoding)
+        
+        # Determine if faces match based on adjusted tolerance
+        match = distance <= adjusted_tolerance
+        
+        return match, distance, adjusted_tolerance
+
+# Create a singleton instance of FaceService
+face_service = FaceService()

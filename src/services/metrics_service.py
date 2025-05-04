@@ -11,10 +11,10 @@ from pathlib import Path
 from collections import defaultdict
 
 # Import config and logger
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
-from utils.logger import get_logger
-from utils.database import database
+from src.utils.logger import get_logger
+from src.utils.database import database
 
 # Get logger
 logger = get_logger("metrics_service")

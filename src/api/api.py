@@ -9,29 +9,34 @@ from fastapi.staticfiles import StaticFiles
 import sys
 from pathlib import Path
 import time
+import os
 
 # Import config and logger
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 # Import middleware
-from middleware.metrics_middleware import MetricsMiddleware
-from middleware.cors_middleware import setup_cors
+from src.middleware.metrics_middleware import MetricsMiddleware
+from src.middleware.cors_middleware import setup_cors
 
 # Import API routes
-from api.health import router as health_router
-from api.users import router as users_router
-from api.recognition import router as recognition_router
-from api.registration import router as registration_router
+from src.api.health import router as health_router
+from src.api.users import router as users_router
+from src.api.recognition import router as recognition_router
+from src.api.registration import router as registration_router
 
 # Get logger
 logger = get_logger("api")
 
+# Set uploads directory
+UPLOADS_DIR = os.path.join(Path(__file__).resolve().parent.parent.parent, "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+
 # Create FastAPI app
 app = FastAPI(
-    title=config.API_TITLE,
-    description=config.API_DESCRIPTION,
+    title="Face Recognition API",
+    description="API for face recognition and registration",
     version=config.API_VERSION,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -68,7 +73,7 @@ app.include_router(recognition_router)
 app.include_router(registration_router)
 
 # Mount static files
-app.mount("/uploads", StaticFiles(directory=str(config.UPLOADS_DIR)), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
 # Root endpoint
 @app.get("/", tags=["Root"])

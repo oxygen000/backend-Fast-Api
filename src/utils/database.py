@@ -11,9 +11,9 @@ from typing import Dict, List, Any, Optional, Tuple, Union
 import sys
 
 # Import config and logger
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 # Get logger
 logger = get_logger("database")
@@ -561,35 +561,44 @@ class Database:
             # Don't raise exception for cache to avoid affecting main functionality
             return None
     
-    async def set_cache(self, key: str, value: Any, ttl: int = config.CACHE_TTL) -> None:
+    async def set_cache(self, key: str, value: Any, ttl: int = None) -> None:
         """
-        Set a cached value in the database.
+        Set a cache value.
         
         Args:
-            key: The cache key
-            value: The value to cache
-            ttl: Time to live in seconds
+            key: Cache key
+            value: Value to cache
+            ttl: Time to live in seconds (defaults to config.CACHE_EXPIRY)
         """
-        if not config.CACHE_ENABLED:
-            return
-            
         try:
+            # Use default TTL if not provided
+            if ttl is None:
+                ttl = config.CACHE_EXPIRY
+                
             conn = self.get_connection()
             cursor = conn.cursor()
             
-            # Execute query
+            # Convert value to JSON if not a string
+            if not isinstance(value, str):
+                value = json.dumps(value)
+            
+            # Calculate expiration time
             expires_at = int(time.time()) + ttl
+            
+            # Execute query
             cursor.execute('''
             INSERT OR REPLACE INTO cache (key, value, expires_at)
             VALUES (?, ?, ?)
-            ''', (key, json.dumps(value), expires_at))
+            ''', (key, value, expires_at))
             
             # Commit changes and close connection
             conn.commit()
             conn.close()
+            
+            logger.debug(f"Set cache key {key} with TTL {ttl} seconds")
         except Exception as e:
             logger.error(f"Error setting cache: {e}")
-            # Don't raise exception for cache to avoid affecting main functionality
+            # Don't raise the exception to avoid breaking the application on cache errors
     
     async def clear_cache(self) -> int:
         """
@@ -649,5 +658,5 @@ class Database:
             # Don't raise exception for cache to avoid affecting main functionality
             return 0
 
-# Create database instance
+# Create a singleton instance of the database
 database = Database()

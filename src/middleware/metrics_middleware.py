@@ -11,9 +11,10 @@ import sys
 from pathlib import Path
 
 # Import services
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from services.metrics_service import metrics_service
-from utils.logger import get_logger
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+from config import config
+from src.services.metrics_service import metrics_service
+from src.utils.logger import get_logger
 
 # Get logger
 logger = get_logger("metrics_middleware")

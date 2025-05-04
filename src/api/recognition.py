@@ -13,11 +13,14 @@ import sys
 from pathlib import Path
 
 # Import services and utilities
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-from services.face_service import face_service
-from utils.database import database
-from utils.logger import get_logger
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
+from src.services.face_service import face_service
+from src.utils.database import database
+from src.utils.logger import get_logger
+
+# Set default max concurrent recognitions if not in config
+MAX_CONCURRENT_RECOGNITIONS = 5
 
 # Get logger
 logger = get_logger("api.recognition")
@@ -26,7 +29,7 @@ logger = get_logger("api.recognition")
 router = APIRouter(tags=["Recognition"])
 
 # Create semaphore to limit concurrent recognition operations
-recognition_semaphore = asyncio.Semaphore(config.MAX_CONCURRENT_RECOGNITIONS)
+recognition_semaphore = asyncio.Semaphore(MAX_CONCURRENT_RECOGNITIONS)
 
 @router.post("/api/recognize")
 async def recognize_face(

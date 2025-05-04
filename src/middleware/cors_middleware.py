@@ -9,9 +9,9 @@ import sys
 from pathlib import Path
 
 # Import config and logger
-sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from config import config
-from utils.logger import get_logger
+from src.utils.logger import get_logger
 
 # Get logger
 logger = get_logger("cors_middleware")
@@ -26,9 +26,9 @@ def setup_cors(app: FastAPI) -> None:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.CORS_ORIGINS,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_credentials=config.CORS_CREDENTIALS,
+        allow_methods=config.CORS_METHODS,
+        allow_headers=config.CORS_HEADERS,
     )
     
     logger.info(f"CORS middleware initialized with origins: {config.CORS_ORIGINS}")
