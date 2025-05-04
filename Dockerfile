@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3.11-alpine
 
 WORKDIR /app
 
@@ -19,7 +19,9 @@ RUN apk add --no-cache \
     libxml2-dev \
     libxslt-dev \
     linux-headers \
-    git
+    git \
+    zstd \
+    xz
 
 # Install dlib separately (dependency of face_recognition)
 RUN pip install --no-cache-dir numpy
@@ -52,4 +54,3 @@ EXPOSE 8000
 
 # Run the application
 CMD ["python", "main.py"]
-
